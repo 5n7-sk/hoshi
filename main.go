@@ -6,14 +6,26 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
+	"github.com/jessevdk/go-flags"
 	"github.com/kyokomi/emoji"
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/browser"
 	"github.com/tcnksm/go-gitconfig"
 )
+
+// These variables are set in build step
+var (
+	Version = "unset"
+)
+
+// Option represents application options
+type Option struct {
+	Version bool `short:"v" long:"version" description:"Show hoshi version"`
+}
 
 // Star represents a stared repository
 type Star struct {
@@ -138,7 +150,19 @@ func getStarsPage(user string, page int) []Star {
 	return stars
 }
 
-func main() {
+func run(args []string) int {
+	var opt Option
+	args, err := flags.ParseArgs(&opt, args)
+
+	if err != nil {
+		return 2
+	}
+
+	if opt.Version {
+		fmt.Printf("hoshi v%s\n", Version)
+		return 0
+	}
+
 	var stars []Star
 
 	user, err := gitconfig.GithubUser()
@@ -191,4 +215,10 @@ func main() {
 	}
 
 	browser.OpenURL(stars[index].HTMLURL)
+
+	return 0
+}
+
+func main() {
+	os.Exit(run(os.Args[1:]))
 }
