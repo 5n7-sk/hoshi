@@ -246,6 +246,14 @@ func run(args []string) int {
 {{ "\U0001F31F stars" }}	{{ .StargazersCount }}`,
 	}
 
+	keys := &promptui.SelectKeys{
+		Next:     promptui.Key{Code: promptui.KeyNext, Display: promptui.KeyNextDisplay},
+		Prev:     promptui.Key{Code: promptui.KeyPrev, Display: promptui.KeyPrevDisplay},
+		PageUp:   promptui.Key{Code: promptui.KeyBackward, Display: promptui.KeyBackwardDisplay},
+		PageDown: promptui.Key{Code: promptui.KeyForward, Display: promptui.KeyForwardDisplay},
+		Search:   promptui.Key{Code: 63, Display: "?"}, // 63 is rune for "?"
+	}
+
 	searcher := func(input string, index int) bool {
 		star := stars[index]
 		name := strings.Replace(strings.ToLower(star.FullName), " ", "", -1)
@@ -260,6 +268,7 @@ func run(args []string) int {
 		Size:              10,
 		HideHelp:          true,
 		Templates:         templates,
+		Keys:              keys,
 		Searcher:          searcher,
 		StartInSearchMode: true,
 	}
