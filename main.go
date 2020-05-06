@@ -16,6 +16,7 @@ import (
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/browser"
 	"github.com/tcnksm/go-gitconfig"
+	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
 // These variables are set in build step
@@ -214,6 +215,19 @@ func run(args []string) int {
 			stars = append(stars, s...)
 		} else {
 			break
+		}
+	}
+
+	terminalWidth, err := terminal.Width()
+	if err != nil {
+		return 1
+	}
+
+	// to prevent a multi-line description
+	for i := 0; i < len(stars); i++ {
+		if len(stars[i].Description) > int(terminalWidth)-22 {
+			p := &stars[i]
+			p.Description = p.Description[:int(terminalWidth)-25] + "..."
 		}
 	}
 
