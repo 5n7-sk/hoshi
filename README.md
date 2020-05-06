@@ -37,6 +37,10 @@
   </a>
 </p>
 
+<p align="center">
+  <img src="./assets/images/demo.png" width="640" alt="demo" />
+</p>
+
 # Hoshi
 
 :sparkles: A CLI to open GitHub favorite repositories in browser
