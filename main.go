@@ -16,6 +16,7 @@ import (
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/browser"
 	"github.com/tcnksm/go-gitconfig"
+	"github.com/lithammer/fuzzysearch/fuzzy"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
 
@@ -259,7 +260,7 @@ func run(args []string) int {
 		name := strings.Replace(strings.ToLower(star.FullName), " ", "", -1)
 		input = strings.Replace(strings.ToLower(input), " ", "", -1)
 
-		return strings.Contains(name, input)
+		return fuzzy.Match(input, name)
 	}
 
 	prompt := promptui.Select{
