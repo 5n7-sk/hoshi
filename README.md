@@ -56,3 +56,12 @@ Get binary from [releases](https://github.com/skmatz/hoshi/releases).
 ```sh
 go get github.com/skmatz/hoshi
 ```
+
+## Settings
+
+Before using `hoshi`, add the following to your `~/.gitconfig`.
+
+```ini
+[github]
+user = <GitHub User ID>
+```
