@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sort"
 	"strings"
 	"time"
 
@@ -24,7 +25,9 @@ var (
 
 // Option represents application options
 type Option struct {
-	Version bool `short:"v" long:"version" description:"Show hoshi version"`
+	Order   string `short:"o" long:"order" description:"Change item order"`
+	Reverse bool   `short:"r" long:"reverse" description:"Reverse item order"`
+	Version bool   `short:"v" long:"version" description:"Show hoshi version"`
 }
 
 // Star represents a stared repository
@@ -150,6 +153,42 @@ func getStarsPage(user string, page int) []Star {
 	return stars
 }
 
+func sortItemOrder(stars []Star, order string, reverse bool) []Star {
+	reversed := func(stars []Star) []Star {
+		for i := len(stars)/2 - 1; i >= 0; i-- {
+			j := len(stars) - 1 - i
+			stars[i], stars[j] = stars[j], stars[i]
+		}
+		return stars
+	}
+
+	switch order {
+	case "added-at":
+	case "author-name":
+		sort.Slice(stars, func(i, j int) bool {
+			return strings.ToLower(stars[i].Owner.Login) < strings.ToLower(stars[j].Owner.Login)
+		})
+	case "created-at":
+		sort.Slice(stars, func(i, j int) bool {
+			return stars[i].CreatedAt.After((stars[j].CreatedAt))
+		})
+	case "repository-name":
+		sort.Slice(stars, func(i, j int) bool {
+			return strings.ToLower(stars[i].Name) < strings.ToLower(stars[j].Name)
+		})
+	case "updated-at":
+		sort.Slice(stars, func(i, j int) bool {
+			return stars[i].UpdatedAt.After((stars[j].UpdatedAt))
+		})
+	}
+
+	if reverse {
+		stars = reversed(stars)
+	}
+
+	return stars
+}
+
 func run(args []string) int {
 	var opt Option
 	args, err := flags.ParseArgs(&opt, args)
@@ -177,6 +216,8 @@ func run(args []string) int {
 			break
 		}
 	}
+
+	stars = sortItemOrder(stars, opt.Order, opt.Reverse)
 
 	templates := &promptui.SelectTemplates{
 		Label:    "{{ . }}",
